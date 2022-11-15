@@ -9,7 +9,8 @@ import (
 
 func download(w http.ResponseWriter, req *http.Request) {
 	var arg string = req.URL.String()
-	arg = arg[6:]
+	arg = arg[7:]
+
 	tr := &http.Transport{
 		MaxIdleConns:       10,
 		IdleConnTimeout:    30 * time.Second,
@@ -17,6 +18,7 @@ func download(w http.ResponseWriter, req *http.Request) {
 	}
 	client := &http.Client{Transport: tr}
 	req1, err := http.NewRequest("GET", arg, nil)
+	req1.Header.Add("Referer", `https://www.douyin.com/"`)
 	resp, err := client.Do(req1)
 	if err != nil {
 		fmt.Println(err)
@@ -32,12 +34,12 @@ func download(w http.ResponseWriter, req *http.Request) {
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 
-	w.Write(body)
 	w.WriteHeader(resp.StatusCode)
+	w.Write(body)
 
 }
 
 func main() {
-	http.HandleFunc("/", download)
+	http.HandleFunc("/d", download)
 	http.ListenAndServe(":8090", nil)
 }
